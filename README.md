@@ -98,9 +98,78 @@ python expense.py
 
    * All values are summed and shown
 6. Program repeats until user exits
+    #  Logic Explanation
+
+* Expenses are stored in a **CSV file** as rows
+* Each row contains:
+
+  * Expense Name
+  * Amount
+* The program reads and writes data using Python’s `csv` module
+* Total expense is calculated using a loop that adds all amounts
+* Conditional statements are used to provide feedback
+
 
 ---
+# Program
+```import csv
 
+FILE = "expenses.csv"
+
+def add_expense():
+    name = input("Enter expense name: ")
+    amount = input("Enter amount: ")
+
+    with open(FILE, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([name, amount])
+
+    print("Expense saved!\n")
+
+def view_expense():
+    try:
+        with open(FILE, 'r') as file:
+            reader = csv.reader(file)
+            print("\nExpenses:")
+            for row in reader:
+                print(f"{row[0]} - ₹{row[1]}")
+        print()
+    except FileNotFoundError:
+        print("No data found.\n")
+
+def total_expense():
+    total = 0
+    try:
+        with open(FILE, 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                total += float(row[1])
+        print(f"Total Expense: ₹{total}\n")
+    except FileNotFoundError:
+        print("No data found.\n")
+
+def menu():
+    while True:
+        print("1. Add Expense")
+        print("2. View Expenses")
+        print("3. Total Expense")
+        print("4. Exit")
+
+        choice = input("Enter choice: ")
+
+        if choice == '1':
+            add_expense()
+        elif choice == '2':
+            view_expense()
+        elif choice == '3':
+            total_expense()
+        elif choice == '4':
+            break
+        else:
+            print("Invalid choice!\n")
+
+menu()
+```
 #  Example Menu
 
 ```id="menuexp001"
@@ -128,6 +197,8 @@ Enter expense name: Travel
 Enter amount: 500
 Expense saved successfully!
 ```
+# Output
+<img width="989" height="609" alt="image" src="https://github.com/user-attachments/assets/dbdfdf05-2fa6-4e0a-a63d-9ffcf2d16ae7" />
 
 
 
@@ -145,19 +216,6 @@ Travel - ₹500
 ```id="totalexp001"
 Total Expense: ₹700
 ```
-
-
-#  Logic Explanation
-
-* Expenses are stored in a **CSV file** as rows
-* Each row contains:
-
-  * Expense Name
-  * Amount
-* The program reads and writes data using Python’s `csv` module
-* Total expense is calculated using a loop that adds all amounts
-* Conditional statements are used to provide feedback
-
 
 
 #  Future Enhancements
