@@ -112,30 +112,49 @@ python expense.py
 
 ---
 # Program
-```import csv
+```
+import csv
+import tkinter as tk
+from tkinter import messagebox
+import matplotlib.pyplot as plt
 
 FILE = "expenses.csv"
 
+# -------- Functions -------- #
+
 def add_expense():
-    name = input("Enter expense name: ")
-    amount = input("Enter amount: ")
+    name = entry_name.get()
+    amount = entry_amount.get()
+
+    if name == "" or amount == "":
+        messagebox.showwarning("Input Error", "Please enter all fields")
+        return
+
+    try:
+        amount = float(amount)
+    except:
+        messagebox.showerror("Error", "Amount must be a number")
+        return
 
     with open(FILE, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([name, amount])
 
-    print("Expense saved!\n")
+    messagebox.showinfo("Success", "Expense Added!")
+    entry_name.delete(0, tk.END)
+    entry_amount.delete(0, tk.END)
+
 
 def view_expense():
     try:
         with open(FILE, 'r') as file:
             reader = csv.reader(file)
-            print("\nExpenses:")
+            output.delete('1.0', tk.END)
             for row in reader:
-                print(f"{row[0]} - ₹{row[1]}")
-        print()
+                output.insert(tk.END, f"{row[0]} - ₹{row[1]}\n")
     except FileNotFoundError:
-        print("No data found.\n")
+        messagebox.showerror("Error", "No data found")
+
 
 def total_expense():
     total = 0
@@ -144,31 +163,65 @@ def total_expense():
             reader = csv.reader(file)
             for row in reader:
                 total += float(row[1])
-        print(f"Total Expense: ₹{total}\n")
+        messagebox.showinfo("Total Expense", f"₹{total}")
     except FileNotFoundError:
-        print("No data found.\n")
+        messagebox.showerror("Error", "No data found")
 
-def menu():
-    while True:
-        print("1. Add Expense")
-        print("2. View Expenses")
-        print("3. Total Expense")
-        print("4. Exit")
 
-        choice = input("Enter choice: ")
+def plot_expenses():
+    names = []
+    amounts = []
 
-        if choice == '1':
-            add_expense()
-        elif choice == '2':
-            view_expense()
-        elif choice == '3':
-            total_expense()
-        elif choice == '4':
-            break
+    try:
+        with open(FILE, 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                names.append(row[0])
+                amounts.append(float(row[1]))
+
+        if names:
+            plt.figure()
+            plt.bar(names, amounts)
+            plt.xlabel("Expense Name")
+            plt.ylabel("Amount (₹)")
+            plt.title("Expense Graph")
+            plt.xticks(rotation=45)
+            plt.show()
         else:
-            print("Invalid choice!\n")
+            messagebox.showinfo("Info", "No data to plot")
 
-menu()
+    except FileNotFoundError:
+        messagebox.showerror("Error", "No data found")
+
+
+# -------- UI -------- #
+
+root = tk.Tk()
+root.title("Expense Tracker")
+root.geometry("400x450")
+
+# Labels
+tk.Label(root, text="Expense Name").pack()
+entry_name = tk.Entry(root)
+entry_name.pack()
+
+tk.Label(root, text="Amount").pack()
+entry_amount = tk.Entry(root)
+entry_amount.pack()
+
+# Buttons
+tk.Button(root, text="Add Expense", command=add_expense).pack(pady=5)
+tk.Button(root, text="View Expenses", command=view_expense).pack(pady=5)
+tk.Button(root, text="Total Expense", command=total_expense).pack(pady=5)
+tk.Button(root, text="Show Graph", command=plot_expenses).pack(pady=5)
+
+# Output Box
+output = tk.Text(root, height=10)
+output.pack()
+
+root.mainloop()
+
+
 ```
 #  Example Menu
 
@@ -198,7 +251,10 @@ Enter amount: 500
 Expense saved successfully!
 ```
 # Output
-<img width="989" height="609" alt="image" src="https://github.com/user-attachments/assets/dbdfdf05-2fa6-4e0a-a63d-9ffcf2d16ae7" />
+<img width="928" height="603" alt="image" src="https://github.com/user-attachments/assets/d5b58e67-baf0-42fe-abf2-ed24ba183c6c" />
+<img width="496" height="588" alt="image" src="https://github.com/user-attachments/assets/fd204fe8-d000-4f5b-9e32-01579339fdf4" />
+<img width="882" height="595" alt="image" src="https://github.com/user-attachments/assets/32cfa047-cf3c-4471-a119-91c434555202" />
+<img width="793" height="676" alt="image" src="https://github.com/user-attachments/assets/959cc1fb-a92c-404b-a02d-271cd3b14087" />
 
 
 
